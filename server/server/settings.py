@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
     'public'
 ]
@@ -51,11 +52,28 @@ from datetime import timedelta
 
 SIMPLE_JWT_SIGNING_KEY = "b=72^ado*%1(v3r7rga9ch)03xr=d*f)lroz94kosf!61((9=i"
 
+# JWT settings default to CSRF counterparts
+# The following are the default CSRF settings too
+CSRF_COOKIE_NAME = 'CSRF'
+
+CSRF_COOKIE_HTTPONLY = True
+
+CSRF_COOKIE_SECURE = False
+
+CSRF_COOKIE_SAMESITE = 'strict'
+
+CSRF_COOKIE_DOMAIN = 'localhost'
+
+# We use a very small timedelta for demonstration purpose
+CSRF_COOKIE_AGE = timedelta(seconds=30).total_seconds()  # same as jwt refresh
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=15),
-    'ROTATE_REFRESH_TOKENS': False,
+    # Enables cookies if value is set.
+    'AUTH_COOKIE': 'AUTH',
+
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=30),
+    'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 
     'ALGORITHM': 'HS256',
@@ -78,7 +96,10 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
+# CORS settings
+CORS_ALLOW_CREDENTIALS = True
 
+CORS_ORIGIN_WHITELIST = ['http://localhost:4200']
 
 
 # Not as important...
@@ -86,6 +107,7 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
