@@ -9,6 +9,8 @@ TL;DR: Django server repository setup for SimpleJWT. Test user: `test` and pw `t
 
 - Android: [Andrew-Chen-Wang/mobile-auth-example](https://github.com/Andrew-Chen-Wang/mobile-auth-example)
 - iOS: [Andrew-Chen-Wang/mobile-auth-example](https://github.com/Andrew-Chen-Wang/mobile-auth-example)
+- React: [SimpleJWT/drf-SimpleJWT-React](https://github.com/SimpleJWT/drf-SimpleJWT-React)
+- Angular: [SimpleJWT/drf-SimpleJWT-Angular](https://github.com/SimpleJWT/drf-SimpleJWT-Angular)
 
 ---
 ### Introduction
@@ -39,7 +41,7 @@ press "Use this template" (highlighted in green).
 Note, this will NOT create a fork of the repository.
 2. Create your git repository, connect via the ssh remote, and pull.
 3. `cd server` to get your terminal/cmd into the server directory.
-4. To run the server, create a virtual environment `virtualenv venv && source venv/bin/activate`, install packages `pip install -r requirements.txt` -- the requirements.txt file is inside the server subdirectory -- and do `python manage.py migrate && python manage.py runserver`.
+4. To run the server, create a virtual environment `virtualenv venv && source venv/bin/activate`, install packages `pip install -U pip && pip install -r requirements.txt` -- the requirements.txt file is inside the server subdirectory -- and do `python manage.py migrate && python manage.py runserver`.
     - Again, make sure when you do this, you are inside the server directory on your terminal/cmd.
     - On Windows, you should do `venv\Scripts\activate` instead of `source venv/bin/activate`
 5. If you're writing for an example repository, please create
@@ -56,6 +58,17 @@ project.** You can use a third-party package called
 Django-ratelimit or DRF's internal throttling mechanism.
 Django-ratelimit is more extensive -- covering Django views,
 as well -- and thus more supported by SimpleJWT.
+
+---
+### Demo with a httpOnly cookie
+
+When the `httpOnly` cookie option is enabled, both the refresh and access token are removed from the response body.
+To remain protected against CSRF attacks, a CSRF token is returned in the response body instead, and should be added to all insecure requests.
+The CSRF token is stored in local storage and is used to determine if the user is authenticated on the client side.
+When calling the refresh token view, a new CSRF token is generated along with a new `httpOnly` access token.
+
+Whenever a `401` response code is generated from the server, the client (Angular) will try to refresh the JWT access token and postpone all other requests.
+If the refresh process fails, the token stored in local storage is removed along with all of the `httpOnly` cookies by calling the clear token view.
 
 ---
 ### License
